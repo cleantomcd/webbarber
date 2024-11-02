@@ -1,16 +1,15 @@
 package com.webbarber.webbarber.controller;
 
-import com.webbarber.webbarber.dto.UserDTO;
-import com.webbarber.webbarber.entity.User;
+import com.webbarber.webbarber.dto.UserInfoDTO;
 import com.webbarber.webbarber.service.UserService;
-import jakarta.annotation.Nonnull;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/join")
+import java.util.Optional;
+
+@RestController("/users")
 public class UserController {
     private final UserService userService;
 
@@ -18,10 +17,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserDTO data) {
-        this.userService.registerUser(data);
-        return ResponseEntity.ok("Cadastro realizado com sucesso");
+    @GetMapping("/{tel}")
+    public ResponseEntity<Void> getUserInfo(@PathVariable String tel) {
+        Optional<UserInfoDTO> userInfo = userService.getUserInfo(tel);
+        return ResponseEntity.ok().build();
     }
+
+
 
 }

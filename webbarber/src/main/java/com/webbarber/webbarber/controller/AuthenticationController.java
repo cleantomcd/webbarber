@@ -2,8 +2,8 @@ package com.webbarber.webbarber.controller;
 
 import com.webbarber.webbarber.entity.User;
 import com.webbarber.webbarber.infra.security.TokenService;
-import com.webbarber.webbarber.repository.UserRepository;
-import org.antlr.v4.runtime.Token;
+import com.webbarber.webbarber.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import com.webbarber.webbarber.dto.RegisterDTO;
 import com.webbarber.webbarber.dto.AuthenticationDTO;
@@ -11,7 +11,6 @@ import com.webbarber.webbarber.dto.LoginResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("auth")
 public class AuthenticationController {
     private final TokenService tokenService;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationController(TokenService tokenService, UserRepository userRepository,
+    public AuthenticationController(TokenService tokenService, UserService userService,
                                     AuthenticationManager authenticationManager) {
         this.tokenService = tokenService;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.authenticationManager = authenticationManager;
     }
 
@@ -41,10 +40,8 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody @Valid RegisterDTO data) {
-        if(this.userRepository.findByLogin(data.tel()) != null) return ResponseEntity.badRequest().build();
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        User newUser = new User(data.name(), data.tel(), encryptedPassword);
-        this.userRepository.save(newUser);
+        if(userService.userExists(data.tel())) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        userService.registerUser(data);
         return ResponseEntity.ok().build();
     }
 }

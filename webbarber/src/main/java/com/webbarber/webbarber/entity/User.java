@@ -1,7 +1,10 @@
 package com.webbarber.webbarber.entity;
 
+import com.webbarber.webbarber.dto.RegisterDTO;
 import com.webbarber.webbarber.dto.UserDTO;
+import com.webbarber.webbarber.infra.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -18,21 +21,27 @@ public class User implements UserDetails {
     private String tel;
     private String password;
     private String login;
+    private UserRole role;
+    private int amountBookedServices;
 
     public User(String name, String tel, String password) {
         this.name = name;
         this.tel = tel;
         this.password = password;
         this.login = tel;
+        this.role = UserRole.USER;
+        this.amountBookedServices = 0;
     }
 
     public User() {
     }
 
-    public User(UserDTO data) {
+    public User(@Valid RegisterDTO data) {
         this.name = data.name();
         this.tel = data.tel();
         this.password = data.password();
+        this.role = UserRole.USER;
+        this.amountBookedServices = 0;
     }
 
     public String getName() {
@@ -52,6 +61,12 @@ public class User implements UserDetails {
     }
 
     public String getLogin() { return this.tel; }
+
+    public UserRole getUserRole() { return this.role; }
+
+    public int getAmountBookedServices() { return this.amountBookedServices; }
+
+    public void addAmountBookedServices() { this.amountBookedServices += 1; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
