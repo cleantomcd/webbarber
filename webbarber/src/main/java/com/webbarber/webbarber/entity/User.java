@@ -51,6 +51,8 @@ public class User implements UserDetails {
         this.tel = tel;
     }
 
+    public String getLogin() { return this.tel; }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();

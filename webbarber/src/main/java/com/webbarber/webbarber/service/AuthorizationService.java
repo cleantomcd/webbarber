@@ -1,7 +1,6 @@
 package com.webbarber.webbarber.service;
 
 import com.webbarber.webbarber.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +16,6 @@ public class AuthorizationService implements UserDetailsService {
     }
     @Override
     public UserDetails loadUserByUsername(String tel) throws UsernameNotFoundException {
-        return userRepository.findByTel(tel);
+        return userRepository.findByLogin(tel);
     }
 }

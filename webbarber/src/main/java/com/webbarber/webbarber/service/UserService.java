@@ -3,6 +3,8 @@ package com.webbarber.webbarber.service;
 import com.webbarber.webbarber.dto.UserDTO;
 import com.webbarber.webbarber.entity.User;
 import com.webbarber.webbarber.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,9 +15,9 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -36,7 +38,7 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public Optional<User> getUserByTel(String tel) {
+    public Optional<UserDetails> getUserByTel(String tel) {
         return userRepository.findByTel(tel);
     }
 
