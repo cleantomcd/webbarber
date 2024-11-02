@@ -17,11 +17,13 @@ public class User implements UserDetails {
     private String name;
     private String tel;
     private String password;
+    private String login;
 
     public User(String name, String tel, String password) {
         this.name = name;
         this.tel = tel;
         this.password = password;
+        this.login = tel;
     }
 
     public User() {

@@ -5,7 +5,6 @@ import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 @Repository
@@ -13,4 +12,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Nonnull
     Optional<User> findById(@Nonnull Long id);
     Optional<UserDetails> findByTel(String tel);
+    UserDetails findByLogin(String login);
 }
