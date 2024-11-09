@@ -3,6 +3,7 @@ package com.webbarber.webbarber.controller;
 import com.webbarber.webbarber.entity.User;
 import com.webbarber.webbarber.infra.security.TokenService;
 import com.webbarber.webbarber.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import com.webbarber.webbarber.dto.RegisterDTO;
@@ -31,6 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
+    @Transactional
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.tel(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
@@ -39,6 +41,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
+    @Transactional
     public ResponseEntity<Void> register(@RequestBody @Valid RegisterDTO data) {
         if(userService.userExists(data.tel())) return ResponseEntity.status(HttpStatus.CONFLICT).build();
         userService.registerUser(data);

@@ -1,6 +1,7 @@
 package com.webbarber.webbarber.entity;
 
 
+import com.webbarber.webbarber.dto.ServiceDTO;
 import jakarta.persistence.*;
 
 @Entity(name = "service")
@@ -12,16 +13,26 @@ public class Service {
     private String name;
     private String description;
     private int estimatedTime;
+    private int priceInCents;
 
-    public Service(String name, String description, int estimatedTime) {
+    public Service(String name, String description, int estimatedTime, int priceInCents) {
         this.name = name;
         this.description = description;
         this.estimatedTime = estimatedTime;
+        this.priceInCents = priceInCents;
     }
 
-    public Service(String name, int estimatedTime) {
+    public Service(String name, int estimatedTime, int priceInCents) {
         this.name = name;
         this.estimatedTime = estimatedTime;
+        this.priceInCents = priceInCents;
+    }
+
+    public Service(ServiceDTO serviceDTO) {
+        this.name = serviceDTO.name();
+        this.description = serviceDTO.description();
+        this.estimatedTime = serviceDTO.estimatedTime();
+        this.priceInCents = serviceDTO.priceInCents();
     }
 
     public Service() {
@@ -54,6 +65,10 @@ public class Service {
     public void setEstimatedTime(int estimatedTime) {
         this.estimatedTime = estimatedTime;
     }
+
+    public void setPriceInCents(int priceInCents) { this.priceInCents = priceInCents; }
+
+    public int getPriceInCents() { return this.priceInCents; }
 
 
 }

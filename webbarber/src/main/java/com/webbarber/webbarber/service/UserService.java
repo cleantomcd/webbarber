@@ -7,8 +7,9 @@ import com.webbarber.webbarber.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -27,21 +28,32 @@ public class UserService {
         userRepository.save(newUser);
     }
 
-    public boolean userExists(String tel) {
-        return userRepository.findByTel(tel).isPresent();
+    public void verifyIfUserExists(String tel) {
+        if(userRepository.findByTel(tel).isEmpty()) throw new IllegalArgumentException();
     }
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    public Optional<UserInfoDTO> getUserInfo(String tel) {
-        Optional<User> user = getUserByTel(tel);
+    public UserInfoDTO getUserInfo(String tel) {
+        Optional<User> userOptional = getUserByTel(tel);
         return user.map(userInfo -> new UserInfoDTO(userInfo.getName(), userInfo.getTel()));
     }
 
     public Optional<User> getUserByTel(String tel) {
         return userRepository.findByTel(tel);
+    }
+
+    public void deleteUser(Long id) {
+        Optional<User> userOptional = getUserById(id);
+        if(userOptional.isEmpty()) throw new IllegalArgumentException();
+        User user = userOptional.get();
+        userRepository.delete(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll().stream().sorted().collect(Collectors.toList());
     }
 
 
