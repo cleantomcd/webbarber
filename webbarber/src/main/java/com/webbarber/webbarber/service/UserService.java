@@ -32,13 +32,21 @@ public class UserService {
         if(userRepository.findByTel(tel).isEmpty()) throw new IllegalArgumentException();
     }
 
+    public boolean userExists(String tel) {
+        return userRepository.findByTel(tel).isPresent();
+    }
+
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
+    public User findUserByTel(String tel) {
+        return userRepository.findUserByTel(tel);
+    }
+
     public UserInfoDTO getUserInfo(String tel) {
-        Optional<User> userOptional = getUserByTel(tel);
-        return user.map(userInfo -> new UserInfoDTO(userInfo.getName(), userInfo.getTel()));
+        User user = findUserByTel(tel);
+        return new UserInfoDTO(user.getName(), user.getTel());
     }
 
     public Optional<User> getUserByTel(String tel) {

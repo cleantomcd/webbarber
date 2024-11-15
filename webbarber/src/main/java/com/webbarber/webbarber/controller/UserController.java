@@ -21,7 +21,7 @@ public class UserController {
 
     @GetMapping("/{tel}")
     public ResponseEntity<UserInfoDTO> getUserInfo(@PathVariable String tel) {
-        Optional<UserInfoDTO> userInfo = userService.getUserInfo(tel);
+        UserInfoDTO userInfo = userService.getUserInfo(tel);
         return ResponseEntity.ok(userInfo);
     }
 
