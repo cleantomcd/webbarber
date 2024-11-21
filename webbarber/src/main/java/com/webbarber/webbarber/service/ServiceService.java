@@ -18,7 +18,7 @@ public class ServiceService {
       serviceRepository.save(newService);
   }
 
-  public void updateService(Long id, ServiceDTO updatedService) {
+  public void updateService(String id, ServiceDTO updatedService) {
       Optional<Service> optionalService = findById(id);
       if(optionalService.isEmpty()) throw new IllegalArgumentException();
       Service service = optionalService.get();
@@ -33,14 +33,14 @@ public class ServiceService {
       service.setPriceInCents(updatedService.priceInCents());
   }
 
-  public void deleteService(Long id) {
+  public void deleteService(String id) {
       Optional<Service> optionalService = findById(id);
       if(optionalService.isEmpty()) throw new IllegalArgumentException();
       Service service = optionalService.get();
       serviceRepository.delete(service);
   }
 
-  public Optional<Service> findById(Long id) {
+  public Optional<Service> findById(String id) {
       return serviceRepository.findById(id);
   }
 }

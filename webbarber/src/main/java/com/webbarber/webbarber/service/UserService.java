@@ -3,6 +3,7 @@ package com.webbarber.webbarber.service;
 import com.webbarber.webbarber.dto.RegisterDTO;
 import com.webbarber.webbarber.dto.UserInfoDTO;
 import com.webbarber.webbarber.entity.User;
+import com.webbarber.webbarber.infra.UserRole;
 import com.webbarber.webbarber.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,7 +37,7 @@ public class UserService {
         return userRepository.findByTel(tel).isPresent();
     }
 
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
 
@@ -53,7 +54,7 @@ public class UserService {
         return userRepository.findByTel(tel);
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(String id) {
         Optional<User> userOptional = getUserById(id);
         if(userOptional.isEmpty()) throw new IllegalArgumentException();
         User user = userOptional.get();

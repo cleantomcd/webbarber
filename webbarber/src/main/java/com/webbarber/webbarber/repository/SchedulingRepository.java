@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface SchedulingRepository extends JpaRepository<Scheduling, Long> {
     @Nonnull
-    Optional<Scheduling> findById(@Nonnull Long id);
+    Optional<Scheduling> findById(@Nonnull String id);
     List<Scheduling> findAllByUser(@Nonnull User user);
 }

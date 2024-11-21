@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 @Entity(name = "service")
 @Table(name = "service")
 public class Service {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     private String name;
     private String description;
@@ -38,7 +38,7 @@ public class Service {
     public Service() {
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

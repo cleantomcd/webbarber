@@ -7,8 +7,8 @@ import java.time.LocalTime;
 @Entity(name = "scheduling")
 @Table(name = "scheduling")
 public class Scheduling {
-    @Id @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue (strategy = GenerationType.UUID)
+    private String id;
 
     @ManyToOne
     private User user;
@@ -28,7 +28,7 @@ public class Scheduling {
 
     public Scheduling() {}
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

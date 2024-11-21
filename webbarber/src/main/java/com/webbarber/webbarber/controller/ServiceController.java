@@ -21,16 +21,16 @@ public class ServiceController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/update")
+    @PutMapping("/services/{id}/update")
     @Transactional
-    public ResponseEntity<Void> updateService(@RequestBody ServiceDTO updatedService, @PathVariable Long id) {
+    public ResponseEntity<Void> updateService(@RequestBody ServiceDTO updatedService, @PathVariable String id) {
         serviceService.updateService(id, updatedService);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/services/{id}/delete")
     @Transactional
-    public ResponseEntity<Void> deleteService(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteService(@PathVariable String id) {
         serviceService.deleteService(id);
         return ResponseEntity.ok().build();
     }

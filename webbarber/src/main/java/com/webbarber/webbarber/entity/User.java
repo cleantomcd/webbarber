@@ -6,6 +6,7 @@ import com.webbarber.webbarber.infra.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -14,13 +15,12 @@ import java.util.List;
 @Entity(name = "user")
 @Table(name = "users")
 public class User implements UserDetails {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     private String name;
     private String tel;
     private String password;
-    private String login;
     private UserRole role;
     private int amountBookedServices;
 
@@ -28,12 +28,8 @@ public class User implements UserDetails {
         this.name = name;
         this.tel = tel;
         this.password = password;
-        this.login = tel;
         this.role = UserRole.USER;
         this.amountBookedServices = 0;
-    }
-
-    public User() {
     }
 
     public User(@Valid RegisterDTO data) {
@@ -42,6 +38,9 @@ public class User implements UserDetails {
         this.password = data.password();
         this.role = UserRole.USER;
         this.amountBookedServices = 0;
+    }
+
+    public User() {
     }
 
     public String getName() {
@@ -70,7 +69,8 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        if (this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     public String getPassword() {
@@ -106,7 +106,7 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

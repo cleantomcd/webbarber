@@ -1,6 +1,5 @@
 package com.webbarber.webbarber.repository;
 
-import com.webbarber.webbarber.dto.ServiceDTO;
 import com.webbarber.webbarber.entity.Service;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Long> {
     @Nonnull
-    Optional<Service> findById(@Nonnull Long id);
+    Optional<Service> findById(@Nonnull String id);
     Optional<List<Service>> findAllByName(@Nonnull String name);
-    void delete(ServiceDTO oldService);
+    void delete(@Nonnull Service service);
 }
