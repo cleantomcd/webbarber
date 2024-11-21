@@ -25,8 +25,14 @@ public class UserService {
 
     public void registerUser(@Valid RegisterDTO data) {
         String encryptedPassword = passwordEncoder.encode(data.password());
-        User newUser = new User(data.name(), data.tel(), encryptedPassword);
+        String formatedPhoneNumber = formatPhoneNumber(data.tel());
+        User newUser = new User(data.name(), formatedPhoneNumber, encryptedPassword);
         userRepository.save(newUser);
+    }
+
+    private String formatPhoneNumber(String tel) {
+        if(tel.startsWith("+55")) return tel;
+        else return "+55" + tel;
     }
 
     public void verifyIfUserExists(String tel) {
