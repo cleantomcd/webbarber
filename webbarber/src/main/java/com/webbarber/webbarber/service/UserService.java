@@ -68,7 +68,7 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return userRepository.findAll().stream().sorted().collect(Collectors.toList());
+        return userRepository.findAll().stream().sorted().toList();
     }
 
 

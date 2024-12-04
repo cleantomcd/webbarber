@@ -34,4 +34,10 @@ public class ServiceController {
         serviceService.deleteService(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/services")
+    public ResponseEntity<Void> getAllServices() {
+        serviceService.getAll();
+        return ResponseEntity.ok().build();
+    }
 }
