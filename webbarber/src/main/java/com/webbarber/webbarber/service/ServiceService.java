@@ -3,6 +3,8 @@ package com.webbarber.webbarber.service;
 import com.webbarber.webbarber.dto.ServiceDTO;
 import com.webbarber.webbarber.entity.Service;
 import com.webbarber.webbarber.repository.ServiceRepository;
+
+import java.util.List;
 import java.util.Optional;
 
 @org.springframework.stereotype.Service
@@ -42,5 +44,9 @@ public class ServiceService {
 
   public Optional<Service> findById(String id) {
       return serviceRepository.findById(id);
+  }
+
+  public List<Service> getAll() {
+      return serviceRepository.findAll();
   }
 }
