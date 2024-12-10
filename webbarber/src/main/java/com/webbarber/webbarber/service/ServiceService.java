@@ -49,4 +49,11 @@ public class ServiceService {
   public List<Service> getAll() {
       return serviceRepository.findAll();
   }
+
+  public void updateServiceStatus(String id) {
+      Optional<Service> optionalService = findById(id);
+      if(optionalService.isEmpty()) throw new IllegalArgumentException();
+      Service service = optionalService.get();
+      service.setActive(!service.isActive());
+  }
 }

@@ -6,7 +6,7 @@ import java.time.LocalTime;
 
 @Entity(name = "scheduling")
 @Table(name = "scheduling")
-public class Scheduling {
+public class Booking {
     @Id @GeneratedValue (strategy = GenerationType.UUID)
     private String id;
 
@@ -19,14 +19,14 @@ public class Scheduling {
     private LocalTime start;
     private LocalTime estimatedEnd;
 
-    public Scheduling(User user, Service service, LocalTime start, LocalTime estimatedEnd) {
+    public Booking(User user, Service service, LocalTime start, LocalTime estimatedEnd) {
         this.user = user;
         this.service = service;
         this.start = start;
         this.estimatedEnd = estimatedEnd;
     }
 
-    public Scheduling() {}
+    public Booking() {}
 
     public String getId() {
         return id;

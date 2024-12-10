@@ -40,4 +40,12 @@ public class ServiceController {
         serviceService.getAll();
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/status")
+    @Transactional
+    public ResponseEntity<Void> updateService(@PathVariable String id) {
+        serviceService.updateServiceStatus(id);
+        return ResponseEntity.ok().build();
+
+    }
 }

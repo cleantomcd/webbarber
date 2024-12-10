@@ -14,4 +14,5 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     Optional<Service> findById(@Nonnull String id);
     Optional<List<Service>> findAllByName(@Nonnull String name);
     void delete(@Nonnull Service service);
+    Optional<List<Service>> findAllByActiveTrue();
 }
