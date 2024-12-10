@@ -1,5 +1,6 @@
 package com.webbarber.webbarber.repository;
 
+import com.webbarber.webbarber.dto.UserInfoDTO;
 import com.webbarber.webbarber.entity.User;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,5 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     UserDetails findByLogin(@Param("login") String login);
     @Nonnull
     List<User> findAll();
+    @Query("SELECT new com.webbarber.webbarber.dto.UserInfoDTO(u.name, u.tel, u.amountBookedServices) FROM user u")
+    List<UserInfoDTO> findAllUserDTOs();
     User findUserByTel(String tel);
 }

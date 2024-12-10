@@ -1,5 +1,6 @@
 package com.webbarber.webbarber.controller;
 
+import com.webbarber.webbarber.dto.UserDTO;
 import com.webbarber.webbarber.dto.UserInfoDTO;
 import com.webbarber.webbarber.entity.User;
 import com.webbarber.webbarber.service.UserService;
@@ -31,8 +32,8 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping()
-    public ResponseEntity<List<User>> getAllUsers() {
+    @GetMapping("/users")
+    public ResponseEntity<List<UserInfoDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
