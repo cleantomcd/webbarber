@@ -4,8 +4,8 @@ package com.webbarber.webbarber.entity;
 import com.webbarber.webbarber.dto.ServiceDTO;
 import jakarta.persistence.*;
 
-@Entity(name = "service")
-@Table(name = "service")
+@Entity(name = "services")
+@Table(name = "services")
 public class Service {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -14,18 +14,21 @@ public class Service {
     private String description;
     private int estimatedTime;
     private int priceInCents;
+    private boolean active;
 
     public Service(String name, String description, int estimatedTime, int priceInCents) {
         this.name = name;
         this.description = description;
         this.estimatedTime = estimatedTime;
         this.priceInCents = priceInCents;
+        this.active = true;
     }
 
     public Service(String name, int estimatedTime, int priceInCents) {
         this.name = name;
         this.estimatedTime = estimatedTime;
         this.priceInCents = priceInCents;
+        this.active = true;
     }
 
     public Service(ServiceDTO serviceDTO) {
@@ -33,6 +36,7 @@ public class Service {
         this.description = serviceDTO.description();
         this.estimatedTime = serviceDTO.estimatedTime();
         this.priceInCents = serviceDTO.priceInCents();
+        this.active = true;
     }
 
     public Service() {
@@ -69,6 +73,13 @@ public class Service {
     public void setPriceInCents(int priceInCents) { this.priceInCents = priceInCents; }
 
     public int getPriceInCents() { return this.priceInCents; }
+
+    public boolean isActive() { return this.active; }
+
+    public void setActive(boolean status) {
+        this.active = status;
+    }
+
 
 
 }

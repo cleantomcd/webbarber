@@ -1,10 +1,8 @@
 package com.webbarber.webbarber.service;
 
 import com.webbarber.webbarber.dto.RegisterDTO;
-import com.webbarber.webbarber.dto.UserDTO;
 import com.webbarber.webbarber.dto.UserInfoDTO;
 import com.webbarber.webbarber.entity.User;
-import com.webbarber.webbarber.infra.UserRole;
 import com.webbarber.webbarber.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 public class UserService {
@@ -51,16 +49,14 @@ public class UserService {
     }
 
     public User findUserByTel(String tel) {
+        tel = formatPhoneNumber(tel);
         return userRepository.findUserByTel(tel);
     }
 
     public UserInfoDTO getUserInfo(String tel) {
+        tel = formatPhoneNumber(tel);
         User user = findUserByTel(tel);
         return new UserInfoDTO(user.getName(), user.getTel(), user.getAmountBookedServices());
-    }
-
-    public Optional<User> getUserByTel(String tel) {
-        return userRepository.findByTel(tel);
     }
 
     public void deleteUser(String id) {

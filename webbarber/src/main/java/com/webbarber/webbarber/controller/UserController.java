@@ -1,18 +1,13 @@
 package com.webbarber.webbarber.controller;
 
-import com.webbarber.webbarber.dto.UserDTO;
 import com.webbarber.webbarber.dto.UserInfoDTO;
-import com.webbarber.webbarber.entity.User;
 import com.webbarber.webbarber.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Optional;
 
-@RestController("/users")
+@RestController
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
@@ -26,13 +21,13 @@ public class UserController {
         return ResponseEntity.ok(userInfo);
     }
 
-    @DeleteMapping("/users/{id}/delete")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<String> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Usuário deletado com sucesso");
     }
 
-    @GetMapping("/users")
+    @GetMapping()
     public ResponseEntity<List<UserInfoDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }

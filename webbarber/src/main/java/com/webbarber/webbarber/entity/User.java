@@ -6,6 +6,7 @@ import com.webbarber.webbarber.infra.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -112,7 +113,7 @@ public class User implements UserDetails, Comparable {
     }
 
     @Override
-    public int compareTo(@NotNull Object o) {
+    public int compareTo(@NonNull Object o) {
         User oUser = (User) o;
         return this.getName().compareTo(oUser.getName());
     }

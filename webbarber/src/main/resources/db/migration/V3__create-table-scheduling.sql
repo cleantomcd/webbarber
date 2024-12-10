@@ -1,4 +1,4 @@
-CREATE TABLE scheduling (
+CREATE TABLE booking (
     id TEXT UNIQUE PRIMARY KEY,
     client_id TEXT NOT NULL,
     service_id TEXT NOT NULL,

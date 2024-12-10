@@ -4,6 +4,7 @@ import com.webbarber.webbarber.dto.ServiceDTO;
 import com.webbarber.webbarber.entity.Service;
 import com.webbarber.webbarber.repository.ServiceRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +47,14 @@ public class ServiceService {
       return serviceRepository.findById(id);
   }
 
-  public List<Service> getAll() {
-      return serviceRepository.findAll();
+  public List<ServiceDTO> getActives() {
+      return new ArrayList<>(serviceRepository.findAllByActiveTrue());
+  }
+
+  public void updateServiceStatus(String id) {
+      Optional<Service> optionalService = findById(id);
+      if(optionalService.isEmpty()) throw new IllegalArgumentException();
+      Service service = optionalService.get();
+      service.setActive(!service.isActive());
   }
 }

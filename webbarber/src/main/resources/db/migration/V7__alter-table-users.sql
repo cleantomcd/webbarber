@@ -1,2 +1,2 @@
 ALTER TABLE users ADD COLUMN role TEXT;
-UPDATE users SET role = 'user';
+UPDATE users SET role = 'userId';

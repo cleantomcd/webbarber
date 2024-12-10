@@ -6,7 +6,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/services")
+import java.util.List;
+
+@RestController
+@RequestMapping("/services")
 public class ServiceController {
     private final ServiceService serviceService;
 
@@ -16,28 +19,35 @@ public class ServiceController {
 
     @PostMapping("/new")
     @Transactional
-    public ResponseEntity<Void> createService(@RequestBody ServiceDTO service) {
+    public ResponseEntity<String> createService(@RequestBody ServiceDTO service) {
         serviceService.createService(service);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Serviço criado com sucesso");
     }
 
-    @PutMapping("/services/{id}/update")
+    @PutMapping("/{id}/update")
     @Transactional
-    public ResponseEntity<Void> updateService(@RequestBody ServiceDTO updatedService, @PathVariable String id) {
+    public ResponseEntity<String> updateService(@RequestBody ServiceDTO updatedService, @PathVariable String id) {
         serviceService.updateService(id, updatedService);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Serviço atualizado com sucesso");
     }
 
-    @DeleteMapping("/services/{id}/delete")
+    @DeleteMapping("/{id}/delete")
     @Transactional
-    public ResponseEntity<Void> deleteService(@PathVariable String id) {
+    public ResponseEntity<String> deleteService(@PathVariable String id) {
         serviceService.deleteService(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Serviço deletado com sucesso");
     }
 
-    @GetMapping("/services")
-    public ResponseEntity<Void> getAllServices() {
-        serviceService.getAll();
-        return ResponseEntity.ok().build();
+    @GetMapping("/all")
+    public ResponseEntity<List<ServiceDTO>> getAllActiveServices() {
+        return ResponseEntity.ok(serviceService.getActives());
+    }
+
+    @PutMapping("/{id}/status")
+    @Transactional
+    public ResponseEntity<String> setStatusService(@PathVariable String id) {
+        serviceService.updateServiceStatus(id);
+        return ResponseEntity.ok("Estado do serviço atualizado com sucesso.");
+
     }
 }
