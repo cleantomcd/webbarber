@@ -50,4 +50,12 @@ public class ServiceController {
         return ResponseEntity.ok("Estado do serviço atualizado com sucesso.");
 
     }
+
+    @PutMapping("/{id}/status")
+    @Transactional
+    public ResponseEntity<Void> updateService(@PathVariable String id) {
+        serviceService.updateServiceStatus(id);
+        return ResponseEntity.ok().build();
+
+    }
 }

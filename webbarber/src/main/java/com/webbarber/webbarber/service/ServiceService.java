@@ -57,4 +57,11 @@ public class ServiceService {
       Service service = optionalService.get();
       service.setActive(!service.isActive());
   }
+
+  public void updateServiceStatus(String id) {
+      Optional<Service> optionalService = findById(id);
+      if(optionalService.isEmpty()) throw new IllegalArgumentException();
+      Service service = optionalService.get();
+      service.setActive(!service.isActive());
+  }
 }
