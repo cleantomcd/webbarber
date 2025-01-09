@@ -16,6 +16,6 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     Optional<Service> findById(@Nonnull String id);
     Optional<List<Service>> findAllByName(@Nonnull String name);
     void delete(@Nonnull Service service);
-    @Query("SELECT new com.webbarber.webbarber.dto.ServiceDTO(s.name, s.description, s.estimatedTime, s.priceInCents, s.active) FROM services s WHERE s.active = true")
+    @Query("SELECT new com.webbarber.webbarber.dto.ServiceDTO(s.name, s.description, s.duration, s.priceInCents, s.active) FROM services s WHERE s.active = true")
     List<ServiceDTO> findAllByActiveTrue();
 }

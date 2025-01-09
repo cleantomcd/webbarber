@@ -51,11 +51,4 @@ public class ServiceController {
 
     }
 
-    @PutMapping("/{id}/status")
-    @Transactional
-    public ResponseEntity<Void> updateService(@PathVariable String id) {
-        serviceService.updateServiceStatus(id);
-        return ResponseEntity.ok().build();
-
-    }
 }

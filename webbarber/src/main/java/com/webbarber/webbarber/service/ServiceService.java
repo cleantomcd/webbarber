@@ -32,7 +32,7 @@ public class ServiceService {
   private void updateServiceAttributes(Service service, ServiceDTO updatedService) {
       service.setName(updatedService.name());
       service.setDescription(updatedService.description());
-      service.setEstimatedTime(updatedService.estimatedTime());
+      service.setDuration(updatedService.duration());
       service.setPriceInCents(updatedService.priceInCents());
   }
 
@@ -58,10 +58,4 @@ public class ServiceService {
       service.setActive(!service.isActive());
   }
 
-  public void updateServiceStatus(String id) {
-      Optional<Service> optionalService = findById(id);
-      if(optionalService.isEmpty()) throw new IllegalArgumentException();
-      Service service = optionalService.get();
-      service.setActive(!service.isActive());
-  }
 }

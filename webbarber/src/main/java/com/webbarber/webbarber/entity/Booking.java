@@ -2,34 +2,29 @@ package com.webbarber.webbarber.entity;
 
 import com.webbarber.webbarber.dto.BookingDTO;
 import jakarta.persistence.*;
-
+import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity(name = "scheduling")
-@Table(name = "scheduling")
+@Entity(name = "booking")
+@Table(name = "booking")
 public class Booking {
     @Id @GeneratedValue (strategy = GenerationType.UUID)
     private String id;
 
     private String userId;
     private String serviceId;
-    private LocalTime start;
-    private LocalTime estimatedEnd;
-
-    public Booking(String userId, String serviceId, LocalTime start, LocalTime estimatedEnd) {
-        this.userId = userId;
-        this.serviceId = serviceId;
-        this.start = start;
-        this.estimatedEnd = estimatedEnd;
-    }
-
+    private LocalDate date;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    //o endTime pode ser calculado como duration * interval
     public Booking() {}
 
     public Booking(BookingDTO data) {
         this.userId = data.userId();
         this.serviceId = data.serviceId();
-        this.start = data.start();
-        this.estimatedEnd = data.estimatedEnd();
+        this.startTime = data.startTime();
+        this.endTime = data.endTime();
+        this.date = data.date();
     }
 
     public String getId() {
@@ -44,12 +39,16 @@ public class Booking {
         return serviceId;
     }
 
-    public LocalTime getStart() {
-        return start;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public LocalTime getEstimatedEnd() {
-        return estimatedEnd;
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public LocalDate getDate() {
+        return this.date;
     }
 
 }

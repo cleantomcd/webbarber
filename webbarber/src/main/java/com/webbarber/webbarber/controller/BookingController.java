@@ -27,9 +27,9 @@ public class BookingController {
     }
 
     @PostMapping("/book")
-    public ResponseEntity<Void> newBooking(@RequestBody BookingDTO bookingData) {
-        /* TODO */
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> newBooking(@RequestBody BookingDTO bookingData) {
+        bookingService.bookAppointment(bookingData);
+        return ResponseEntity.ok("Horário reservado com sucesso.");
     }
 
     @DeleteMapping("/{id}/cancel")

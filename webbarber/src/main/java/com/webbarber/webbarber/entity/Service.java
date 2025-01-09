@@ -12,21 +12,21 @@ public class Service {
 
     private String name;
     private String description;
-    private int estimatedTime;
+    private int duration;
     private int priceInCents;
     private boolean active;
 
-    public Service(String name, String description, int estimatedTime, int priceInCents) {
+    public Service(String name, String description, int duration, int priceInCents) {
         this.name = name;
         this.description = description;
-        this.estimatedTime = estimatedTime;
+        this.duration = duration;
         this.priceInCents = priceInCents;
         this.active = true;
     }
 
-    public Service(String name, int estimatedTime, int priceInCents) {
+    public Service(String name, int duration, int priceInCents) {
         this.name = name;
-        this.estimatedTime = estimatedTime;
+        this.duration = duration;
         this.priceInCents = priceInCents;
         this.active = true;
     }
@@ -34,7 +34,7 @@ public class Service {
     public Service(ServiceDTO serviceDTO) {
         this.name = serviceDTO.name();
         this.description = serviceDTO.description();
-        this.estimatedTime = serviceDTO.estimatedTime();
+        this.duration = serviceDTO.duration();
         this.priceInCents = serviceDTO.priceInCents();
         this.active = true;
     }
@@ -54,8 +54,8 @@ public class Service {
         return description;
     }
 
-    public int getEstimatedTime() {
-        return estimatedTime;
+    public int getDuration() {
+        return duration;
     }
 
     public void setName(String name) {
@@ -66,8 +66,8 @@ public class Service {
         this.description = description;
     }
 
-    public void setEstimatedTime(int estimatedTime) {
-        this.estimatedTime = estimatedTime;
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public void setPriceInCents(int priceInCents) { this.priceInCents = priceInCents; }
