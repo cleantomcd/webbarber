@@ -58,4 +58,11 @@ public class ServiceService {
       service.setActive(!service.isActive());
   }
 
+  public boolean existsById(String id) {
+      return serviceRepository.existsById(id);
+  }
+
+  public int getDurationById(String serviceId) {
+      return serviceRepository.getDurationById(serviceId);
+  }
 }

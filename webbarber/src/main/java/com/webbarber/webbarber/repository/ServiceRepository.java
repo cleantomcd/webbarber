@@ -18,4 +18,7 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     void delete(@Nonnull Service service);
     @Query("SELECT new com.webbarber.webbarber.dto.ServiceDTO(s.name, s.description, s.duration, s.priceInCents, s.active) FROM services s WHERE s.active = true")
     List<ServiceDTO> findAllByActiveTrue();
+    boolean existsById(String id);
+    @Query("SELECT s.duration FROM services s WHERE s.id = :id")
+    int getDurationById(String id);
 }

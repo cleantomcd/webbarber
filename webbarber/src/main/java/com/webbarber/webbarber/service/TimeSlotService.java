@@ -4,7 +4,6 @@ import com.webbarber.webbarber.dto.EditedTimeSlotDTO;
 import com.webbarber.webbarber.dto.StandardTimeSlotDTO;
 import com.webbarber.webbarber.entity.TimeSlot;
 import com.webbarber.webbarber.entity.TimeSlotOverride;
-import com.webbarber.webbarber.repository.BookingRepository;
 import com.webbarber.webbarber.repository.TimeSlotOverrideRepository;
 import com.webbarber.webbarber.repository.TimeSlotRepository;
 import org.springframework.stereotype.Service;
@@ -19,15 +18,15 @@ import java.util.stream.Collectors;
 public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
-    private final BookingRepository bookingRepository;
     private final TimeSlotOverrideRepository timeSlotOverrideRepository;
+    private final TimeSlotAvailabilityService timeSlotAvailabilityService;
 
     public TimeSlotService(TimeSlotRepository timeSlotRepository,
-                           BookingRepository bookingRepository,
-                           TimeSlotOverrideRepository timeSlotOverrideRepository) {
+                           TimeSlotOverrideRepository timeSlotOverrideRepository,
+                           TimeSlotAvailabilityService timeSlotAvailabilityService) {
         this.timeSlotRepository = timeSlotRepository;
-        this.bookingRepository = bookingRepository;
         this.timeSlotOverrideRepository = timeSlotOverrideRepository;
+        this.timeSlotAvailabilityService = timeSlotAvailabilityService;
     }
 
     public void setTimeSlot(StandardTimeSlotDTO standardTimeSlotDTO) {
@@ -51,6 +50,16 @@ public class TimeSlotService {
         timeSlot.setInterval(dto.interval());
     }
 
+    private void updateTimeSlotOverrideFromDTO(TimeSlotOverride timeSlotOverride, EditedTimeSlotDTO dto) {
+        timeSlotOverride.setAmStartTime(dto.amStartTime());
+        timeSlotOverride.setAmEndTime(dto.amEndTime());
+        timeSlotOverride.setPmStartTime(dto.pmStartTime());
+        timeSlotOverride.setPmEndTime(dto.pmEndTime());
+        timeSlotOverride.setInterval(dto.interval());
+        timeSlotOverride.setClosed(dto.isClosed());
+        timeSlotOverride.setClosedSlots(dto.closedSlots());
+    }
+
     public void removeTimeSlotOverride(LocalDate date) {
         TimeSlotOverride timeSlotOverride = timeSlotOverrideRepository.findDTOByDate(date);
         timeSlotOverrideRepository.delete(timeSlotOverride);
@@ -60,7 +69,11 @@ public class TimeSlotService {
         TimeSlotOverride timeSlotOverride;
         Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.
                 findByDate(editedTimeSlotDTO.date());
-        timeSlotOverride = optionalTimeSlotOverride.orElseGet(() -> new TimeSlotOverride(editedTimeSlotDTO));
+        if(optionalTimeSlotOverride.isPresent()) {
+            timeSlotOverride = optionalTimeSlotOverride.get();
+            updateTimeSlotOverrideFromDTO(timeSlotOverride, editedTimeSlotDTO);
+        }
+        else timeSlotOverride = new TimeSlotOverride(editedTimeSlotDTO);
         timeSlotOverrideRepository.save(timeSlotOverride);
     }
 
@@ -100,73 +113,4 @@ public class TimeSlotService {
         }
     }
 
-    private List<LocalTime> toLocalTimeList(List<String> slots) {
-        return slots == null ? null : slots.stream()
-                .map(LocalTime::parse)
-                .collect(Collectors.toList());
-    }
-
-    private List<LocalTime> getTimeSlots(StandardTimeSlotDTO timeSlotDTO, List<String> closedSlots) {
-        List<LocalTime> allTimeSlots = new ArrayList<LocalTime>();
-        LocalTime amStart = timeSlotDTO.amStartTime();
-        LocalTime pmStart = timeSlotDTO.pmStartTime();
-        LocalTime amEnd = timeSlotDTO.amEndTime();
-        LocalTime pmEnd = timeSlotDTO.pmEndTime();
-        int interval = timeSlotDTO.interval();
-        while(amStart.isBefore(amEnd)) {
-            allTimeSlots.add(amStart);
-            amStart = amStart.plusMinutes(interval);
-        }
-        while(pmStart.isBefore(pmEnd)) {
-            allTimeSlots.add(pmStart);
-            pmStart = pmStart.plusMinutes(interval);
-        }
-
-        if(closedSlots != null) allTimeSlots.removeAll(toLocalTimeList(closedSlots));
-        return allTimeSlots;
-    }
-
-    public List<LocalTime> getAvailableTimeSlots(LocalDate date) {
-        StandardTimeSlotDTO timeSlot;
-        List<LocalTime> allTimeSlots;
-        if(timeSlotOverrideRepository.findByDate(date).isPresent()) {
-            EditedTimeSlotDTO editedTimeSlotDTO = toEditedTimeSlotDTO(timeSlotOverrideRepository.findDTOByDate(date));
-            if(editedTimeSlotDTO.isClosed()) return null;
-            System.out.println(editedTimeSlotDTO.toString());
-
-            timeSlot = new StandardTimeSlotDTO(editedTimeSlotDTO.date().getDayOfWeek().getValue(), editedTimeSlotDTO.amStartTime(),
-                    editedTimeSlotDTO.amEndTime(), editedTimeSlotDTO.pmStartTime(), editedTimeSlotDTO.pmEndTime(),
-                    editedTimeSlotDTO.interval());
-             allTimeSlots = getTimeSlots(timeSlot, editedTimeSlotDTO.closedSlots());
-        }
-        else {
-            timeSlot = timeSlotRepository.findByDayOfWeek(date.getDayOfWeek().getValue());
-            if(timeSlot == null) return null;
-            allTimeSlots = getTimeSlots(timeSlot, null);
-        }
-        allTimeSlots.removeAll(bookingRepository.findStartTimesByDate(date));
-        return allTimeSlots;
-    }
-
-    public List<LocalDate> getDatesWithSpecificTime(LocalTime time) {
-        List<LocalDate> dates = new ArrayList<LocalDate>();
-        LocalDate date = LocalDate.now();
-        List<LocalTime> slots;
-        LocalDate datePlus14 = date.plusDays(14);
-        while(date.isBefore(datePlus14)) {
-            slots = getAvailableTimeSlots(date);
-            if(slots != null && slots.contains(time)) dates.add(date);
-            date = date.plusDays(1);
-        }
-        return dates;
-    }
-
-    private EditedTimeSlotDTO toEditedTimeSlotDTO(TimeSlotOverride timeSlotOverride) {
-        return new EditedTimeSlotDTO(timeSlotOverride.getDate(), timeSlotOverride.getAmStartTime(),
-                timeSlotOverride.getAmEndTime(), timeSlotOverride.getPmStartTime(), timeSlotOverride.getPmEndTime(),
-                timeSlotOverride.getInterval(), timeSlotOverride.getClosedSlots(), timeSlotOverride.isClosed());
-    }
-
-    // lógica para verificar horário disponível no caso de serviços duplos: 'se horário + interval está disponível,
-    // então adicionar horário + interval' -----> obter horários disponíveis com base no serviço.
 }

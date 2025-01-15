@@ -1,0 +1,1 @@
+ALTER TABLE booking RENAME COLUMN client_id TO user_id;

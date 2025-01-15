@@ -117,6 +117,10 @@ public class TimeSlotOverride {
         return closedSlots;
     }
 
+    public void setClosedSlots(List<String> closedSlots) {
+        this.closedSlots = closedSlots;
+    }
+
     public List<LocalTime> getParsedClosedSlots() {
         return this.closedSlots.stream()
                 .map(LocalTime::parse)

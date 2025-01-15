@@ -25,4 +25,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT new com.webbarber.webbarber.dto.UserInfoDTO(u.name, u.tel, u.amountBookedServices) FROM user u")
     List<UserInfoDTO> findAllUserDTOs();
     User findUserByTel(String tel);
+    boolean existsById(String id);
 }

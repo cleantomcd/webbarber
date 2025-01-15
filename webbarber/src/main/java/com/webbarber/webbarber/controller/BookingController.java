@@ -20,11 +20,11 @@ public class BookingController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Void> getBookingServices() {
-        /* TODO */
-        return ResponseEntity.ok().build();
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Void> getBookServices() {
+//
+//        return ResponseEntity.ok().build();
+//    }
 
     @PostMapping("/book")
     public ResponseEntity<String> newBooking(@RequestBody BookingDTO bookingData) {

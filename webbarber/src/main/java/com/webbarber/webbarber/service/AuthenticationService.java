@@ -1,6 +1,7 @@
 package com.webbarber.webbarber.service;
 
 import com.webbarber.webbarber.dto.RegisterDTO;
+import com.webbarber.webbarber.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -40,10 +41,9 @@ public class AuthenticationService {
         else return "+55" + tel;
     }
 
-    public ResponseEntity<Void> register(RegisterDTO data) {
-        if(userService.userExists(data.tel())) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    public void register(RegisterDTO data) {
+        if(userService.userExists(data.tel())) throw new UserAlreadyExistsException("Usuário já registrado");
         userService.registerUser(data);
-        return ResponseEntity.ok().build();
     }
 
 

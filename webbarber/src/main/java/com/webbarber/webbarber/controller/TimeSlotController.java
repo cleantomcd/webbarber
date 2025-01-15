@@ -2,6 +2,7 @@ package com.webbarber.webbarber.controller;
 
 import com.webbarber.webbarber.dto.EditedTimeSlotDTO;
 import com.webbarber.webbarber.dto.StandardTimeSlotDTO;
+import com.webbarber.webbarber.service.TimeSlotAvailabilityService;
 import com.webbarber.webbarber.service.TimeSlotService;
 import jakarta.transaction.Transactional;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,9 +16,11 @@ import java.util.List;
 @RequestMapping("/timeslot")
 public class TimeSlotController {
     private final TimeSlotService timeSlotService;
+    private final TimeSlotAvailabilityService timeSlotAvailabilityService;
 
-    public TimeSlotController(TimeSlotService timeSlotService) {
+    public TimeSlotController(TimeSlotService timeSlotService, TimeSlotAvailabilityService timeSlotAvailabilityService) {
         this.timeSlotService = timeSlotService;
+        this.timeSlotAvailabilityService = timeSlotAvailabilityService;
     }
 
     @PostMapping("/config")
@@ -40,6 +43,7 @@ public class TimeSlotController {
 
     @PutMapping("/edit/{date}/closed-slots/add")
     public ResponseEntity<String> addClosedSlots(@PathVariable LocalDate date, @RequestBody List<String> slots) {
+        System.out.println("log");
         timeSlotService.addClosedSlots(date, slots);
         return ResponseEntity.ok("Horários fechados com sucesso.");
     }
@@ -66,12 +70,18 @@ public class TimeSlotController {
     @GetMapping("/all")
     public ResponseEntity<List<LocalTime>> getAvailableTimeSlots(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(timeSlotService.getAvailableTimeSlots(date));
+        return ResponseEntity.ok(timeSlotAvailabilityService.getAvailableTimeSlots(date));
     }
 
     @GetMapping("/all/{time}")
     public ResponseEntity<List<LocalDate>> getDatesWithSpecificTime(@PathVariable LocalTime time) {
-        return ResponseEntity.ok(timeSlotService.getDatesWithSpecificTime(time));
+        return ResponseEntity.ok(timeSlotAvailabilityService.getDatesWithSpecificTime(time));
+    }
+
+    @GetMapping("/service/{serviceId}")
+    public ResponseEntity<List<LocalTime>> getTimeSlotsByService(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                                 @PathVariable String serviceId) {
+        return ResponseEntity.ok(timeSlotAvailabilityService.getAvailableTimeSlotsByService(date, serviceId));
     }
 
 }

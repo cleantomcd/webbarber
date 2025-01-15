@@ -41,6 +41,7 @@ public class UserService {
     }
 
     public boolean userExists(String tel) {
+        tel = formatPhoneNumber(tel);
         return userRepository.findByTel(tel).isPresent();
     }
 
@@ -68,6 +69,10 @@ public class UserService {
 
     public List<UserInfoDTO> getAllUsers() {
         return new ArrayList<>(userRepository.findAllUserDTOs());
+    }
+
+    public boolean existsUserById(String id) {
+        return userRepository.existsById(id);
     }
 
 

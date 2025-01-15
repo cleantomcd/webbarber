@@ -16,7 +16,6 @@ public class Booking {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
-    //o endTime pode ser calculado como duration * interval
     public Booking() {}
 
     public Booking(BookingDTO data) {

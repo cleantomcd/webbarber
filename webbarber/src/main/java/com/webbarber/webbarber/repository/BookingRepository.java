@@ -19,6 +19,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT new com.webbarber.webbarber.dto.BookingDTO(b.userId, b.serviceId, b.date, b.startTime, b.endTime) FROM booking b WHERE b.userId = :userId")
     List<Booking> findAllByUserId(@Param("userId") String userId);
     Optional<Booking> findByDateAndStartTime(LocalDate date, LocalTime startTime);
+    Optional<Booking> findByDateAndStartTimeAndEndTime(LocalDate date, LocalTime startTime, LocalTime endTime);
     List<Booking> findAllByDate(LocalDate date);
     @Query("SELECT b.startTime FROM booking b WHERE b.date = :date")
     List<LocalTime> findStartTimesByDate(@Param("date") LocalDate date);
