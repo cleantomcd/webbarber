@@ -16,14 +16,17 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     @Nonnull
     Optional<User> findById(@Nonnull String id);
+
     Optional<User> findByTel(String tel);
+
     @Query("SELECT u FROM user u WHERE u.tel = :login")
     UserDetails findByLogin(@Param("login") String login);
-    @Nonnull
-    @Query("SELECT u FROM user u")
-    List<User> findAll();
+
     @Query("SELECT new com.webbarber.webbarber.dto.UserInfoDTO(u.name, u.tel, u.amountBookedServices) FROM user u")
     List<UserInfoDTO> findAllUserDTOs();
-    User findUserByTel(String tel);
+
+    @Query("SELECT new com.webbarber.webbarber.dto.UserInfoDTO(u.name, u.tel, u.amountBookedServices) FROM user u WHERE u.tel = :tel")
+    UserInfoDTO findUserByTel(@Param("tel") String tel);
+
     boolean existsById(String id);
 }

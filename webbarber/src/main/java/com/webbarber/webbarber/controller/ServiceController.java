@@ -1,8 +1,10 @@
 package com.webbarber.webbarber.controller;
 
 import com.webbarber.webbarber.dto.ServiceDTO;
+import com.webbarber.webbarber.exception.ServiceNotFoundException;
 import com.webbarber.webbarber.service.ServiceService;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,6 +51,11 @@ public class ServiceController {
         serviceService.updateServiceStatus(id);
         return ResponseEntity.ok("Estado do serviço atualizado com sucesso.");
 
+    }
+
+    @ExceptionHandler(ServiceNotFoundException.class)
+    public ResponseEntity<String> handleServiceNotFoundException(ServiceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
 }

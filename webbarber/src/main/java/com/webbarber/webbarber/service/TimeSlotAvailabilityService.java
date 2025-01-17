@@ -2,17 +2,16 @@ package com.webbarber.webbarber.service;
 
 import com.webbarber.webbarber.dto.EditedTimeSlotDTO;
 import com.webbarber.webbarber.dto.StandardTimeSlotDTO;
-import com.webbarber.webbarber.entity.Booking;
 import com.webbarber.webbarber.entity.TimeSlotOverride;
 import com.webbarber.webbarber.repository.BookingRepository;
 import com.webbarber.webbarber.repository.TimeSlotOverrideRepository;
 import com.webbarber.webbarber.repository.TimeSlotRepository;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,15 +30,20 @@ public class TimeSlotAvailabilityService {
         this.serviceService = serviceService;
     }
 
-    public boolean isBookingAvailable(LocalDate date, LocalTime startTime, String serviceId) {
-
-        List<LocalTime> availableTimeSlots = getAvailableTimeSlotsByService(date, serviceId);
-        return bookingRepository.findByDateAndStartTime(date, startTime).isEmpty() &&
-                availableTimeSlots.contains(startTime);
+    public boolean isBookingAvailable(LocalDate date, LocalTime startTime) {
+        if(!getAvailableTimeSlots(date).contains(startTime)) return false;
+        Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.findByDate(date);
+        if(bookingRepository.findByDateAndStartTime(date, startTime).isPresent()) return false;
+        if(optionalTimeSlotOverride.isPresent() &&
+                optionalTimeSlotOverride.get().getClosedSlots().contains(startTime.toString())) {
+            return true;
+        }
+        return bookingRepository.findConflictingBooking(date, startTime).isEmpty();
     }
 
-    public Optional<Booking> findByDateAndStartTime(LocalDate date, LocalTime StartTime) {
-        return bookingRepository.findByDateAndStartTime(date, StartTime);
+    public boolean isBkAvailable(LocalDate date, LocalTime startTime, String serviceId) {
+        List<LocalTime> availableTimeSlots = getAvailableTimeSlotsByService(date, serviceId);
+        return isBookingAvailable(date, startTime) && availableTimeSlots.contains(startTime);
     }
 
     public List<LocalTime> findStartTimesByDate(LocalDate date) {
@@ -107,25 +111,13 @@ public class TimeSlotAvailabilityService {
             allTimeSlots = getTimeSlots(timeSlot, null);
         }
         allTimeSlots.removeAll(findStartTimesByDate(date));
+
         return allTimeSlots;
     }
 
     private StandardTimeSlotDTO toStandardTimeSlotDTO(EditedTimeSlotDTO timeSlotDTO) {
         return new StandardTimeSlotDTO(timeSlotDTO.date().getDayOfWeek().getValue(), timeSlotDTO.amStartTime(),
                 timeSlotDTO.amEndTime(), timeSlotDTO.pmStartTime(), timeSlotDTO.pmEndTime(), timeSlotDTO.interval());
-    }
-
-    public List<LocalDate> getDatesWithSpecificTime(LocalTime time) {
-        List<LocalDate> dates = new ArrayList<LocalDate>();
-        LocalDate date = LocalDate.now();
-        List<LocalTime> slots;
-        LocalDate datePlus14 = date.plusDays(14);
-        while(date.isBefore(datePlus14)) {
-            slots = getAvailableTimeSlots(date);
-            if(slots != null && slots.contains(time)) dates.add(date);
-            date = date.plusDays(1);
-        }
-        return dates;
     }
 
     private EditedTimeSlotDTO toEditedTimeSlotDTO(TimeSlotOverride timeSlotOverride) {
@@ -136,12 +128,11 @@ public class TimeSlotAvailabilityService {
 
     public List<LocalTime> getAvailableTimeSlotsByService(LocalDate date, String serviceId) {
         List<LocalTime> closedSlots = null;
-        int duration = getServiceDurationById(serviceId);
-        if(duration == 1) return getAvailableTimeSlots(date);
         List<LocalTime> amTimeSlots;
         List<LocalTime> pmTimeSlots;
         List<LocalTime> availableSlots;
         StandardTimeSlotDTO timeSlot;
+
         Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.findByDate(date);
         if(optionalTimeSlotOverride.isPresent()) {
             EditedTimeSlotDTO editedTimeSlotDTO = toEditedTimeSlotDTO(timeSlotOverrideRepository.findDTOByDate(date));
@@ -164,18 +155,34 @@ public class TimeSlotAvailabilityService {
 
     private List<LocalTime> getAvailableSequence(List<LocalTime> slots, LocalDate date, String serviceId) {
         List<LocalTime> availableSequence = new ArrayList<>();
-        int duration = getServiceDurationById(serviceId);
+        int duration;
+        if(serviceId == null) duration = 1;
+        else duration = getServiceDurationById(serviceId);
         boolean isSequenceAvailable;
+        LocalTime slot;
+        LocalTime nextSlot;
+        int interval = getInterval(date);
+
         for (int i = 0; i < slots.size() - (duration - 1); i++) {
             isSequenceAvailable = true;
+            slot = slots.get(i);
+            nextSlot = slot;
             for (int j = 0; j < duration; j++) {
-                if (!isBookingAvailable(date, slots.get(j), serviceId)) {
+                if (!isBookingAvailable(date, nextSlot)) {
                     isSequenceAvailable = false;
                     break;
                 }
+                nextSlot = nextSlot.plusMinutes(interval);
             }
-            if (isSequenceAvailable) availableSequence.add(slots.get(i));
+            if (isSequenceAvailable) availableSequence.add(slot);
         }
+
         return availableSequence;
+    }
+
+    public int getInterval(LocalDate date) {
+        Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.findByDate(date);
+        return optionalTimeSlotOverride.map(TimeSlotOverride::getInterval).orElseGet(() ->
+                timeSlotRepository.findByDayOfWeek(date.getDayOfWeek().getValue()).interval());
     }
 }

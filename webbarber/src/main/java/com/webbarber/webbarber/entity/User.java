@@ -1,11 +1,9 @@
 package com.webbarber.webbarber.entity;
 
 import com.webbarber.webbarber.dto.RegisterDTO;
-import com.webbarber.webbarber.dto.UserDTO;
 import com.webbarber.webbarber.infra.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -2,6 +2,7 @@ package com.webbarber.webbarber.service;
 
 import com.webbarber.webbarber.dto.ServiceDTO;
 import com.webbarber.webbarber.entity.Service;
+import com.webbarber.webbarber.exception.ServiceNotFoundException;
 import com.webbarber.webbarber.repository.ServiceRepository;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ServiceService {
 
   public void updateService(String id, ServiceDTO updatedService) {
       Optional<Service> optionalService = findById(id);
-      if(optionalService.isEmpty()) throw new IllegalArgumentException();
+      if(optionalService.isEmpty()) throw new ServiceNotFoundException("Serviço não encontrado");
       Service service = optionalService.get();
       updateServiceAttributes(service, updatedService);
       serviceRepository.save(service);
@@ -38,7 +39,7 @@ public class ServiceService {
 
   public void deleteService(String id) {
       Optional<Service> optionalService = findById(id);
-      if(optionalService.isEmpty()) throw new IllegalArgumentException();
+      if(optionalService.isEmpty()) throw new ServiceNotFoundException("Serviço não encontrado");
       Service service = optionalService.get();
       serviceRepository.delete(service);
   }
@@ -53,7 +54,7 @@ public class ServiceService {
 
   public void updateServiceStatus(String id) {
       Optional<Service> optionalService = findById(id);
-      if(optionalService.isEmpty()) throw new IllegalArgumentException();
+      if(optionalService.isEmpty()) throw new ServiceNotFoundException("Serviço não encontrado");
       Service service = optionalService.get();
       service.setActive(!service.isActive());
   }

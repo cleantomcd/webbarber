@@ -16,14 +16,23 @@ public class Booking {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
+
     public Booking() {}
 
-    public Booking(BookingDTO data) {
+    public Booking(BookingDTO data, LocalTime endTime) {
         this.userId = data.userId();
         this.serviceId = data.serviceId();
         this.startTime = data.startTime();
-        this.endTime = data.endTime();
+        this.endTime = endTime;
         this.date = data.date();
+    }
+
+    public Booking(String userId, String serviceId, LocalDate date, LocalTime startTime, LocalTime endTime  ) {
+        this.endTime = endTime;
+        this.startTime = startTime;
+        this.date = date;
+        this.serviceId = serviceId;
+        this.userId = userId;
     }
 
     public String getId() {
@@ -48,6 +57,10 @@ public class Booking {
 
     public LocalDate getDate() {
         return this.date;
+    }
+
+    public void addStartTime(int minutes) {
+        this.startTime = this.startTime.plusMinutes(minutes);
     }
 
 }

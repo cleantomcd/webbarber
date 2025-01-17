@@ -3,6 +3,7 @@ package com.webbarber.webbarber.service;
 import com.webbarber.webbarber.dto.RegisterDTO;
 import com.webbarber.webbarber.dto.UserInfoDTO;
 import com.webbarber.webbarber.entity.User;
+import com.webbarber.webbarber.exception.UserNotFoundException;
 import com.webbarber.webbarber.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,10 +37,6 @@ public class UserService {
         else return "+55" + tel;
     }
 
-    public void verifyIfUserExists(String tel) {
-        if(userRepository.findByTel(tel).isEmpty()) throw new IllegalArgumentException();
-    }
-
     public boolean userExists(String tel) {
         tel = formatPhoneNumber(tel);
         return userRepository.findByTel(tel).isPresent();
@@ -49,20 +46,14 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public User findUserByTel(String tel) {
+    public UserInfoDTO findUserByTel(String tel) {
         tel = formatPhoneNumber(tel);
         return userRepository.findUserByTel(tel);
     }
 
-    public UserInfoDTO getUserInfo(String tel) {
-        tel = formatPhoneNumber(tel);
-        User user = findUserByTel(tel);
-        return new UserInfoDTO(user.getName(), user.getTel(), user.getAmountBookedServices());
-    }
-
     public void deleteUser(String id) {
         Optional<User> userOptional = getUserById(id);
-        if(userOptional.isEmpty()) throw new IllegalArgumentException();
+        if(userOptional.isEmpty()) throw new UserNotFoundException("Usuário não encontrado");
         User user = userOptional.get();
         userRepository.delete(user);
     }

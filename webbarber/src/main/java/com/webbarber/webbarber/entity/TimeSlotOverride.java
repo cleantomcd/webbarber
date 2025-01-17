@@ -1,6 +1,7 @@
 package com.webbarber.webbarber.entity;
 
 import com.webbarber.webbarber.dto.EditedTimeSlotDTO;
+import com.webbarber.webbarber.dto.StandardTimeSlotDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -42,15 +43,15 @@ public class TimeSlotOverride {
         this.closedSlots = editedTimeSlotDTO.closedSlots();
     }
 
-    public TimeSlotOverride(LocalDate date) {
+    public TimeSlotOverride(LocalDate date, StandardTimeSlotDTO timeSlot, boolean isOpen) {
         this.date = date;
-        this.amStartTime = null;
-        this.amEndTime = null;
-        this.pmStartTime = null;
-        this.pmEndTime = null;
-        this.interval = 0;
+        this.amStartTime = timeSlot.amStartTime();
+        this.amEndTime = timeSlot.amEndTime();
+        this.pmStartTime = timeSlot.pmStartTime();
+        this.pmEndTime = timeSlot.pmEndTime();
+        this.interval = timeSlot.interval();
+        this.isClosed = !isOpen;
         this.closedSlots = null;
-        this.isClosed = true;
     }
 
     public String getId() {

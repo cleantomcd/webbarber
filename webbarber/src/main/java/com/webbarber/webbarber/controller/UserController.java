@@ -1,7 +1,9 @@
 package com.webbarber.webbarber.controller;
 
 import com.webbarber.webbarber.dto.UserInfoDTO;
+import com.webbarber.webbarber.exception.UserNotFoundException;
 import com.webbarber.webbarber.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -17,8 +19,7 @@ public class UserController {
 
     @GetMapping("/{tel}")
     public ResponseEntity<UserInfoDTO> getUserInfo(@PathVariable String tel) {
-        UserInfoDTO userInfo = userService.getUserInfo(tel);
-        return ResponseEntity.ok(userInfo);
+        return ResponseEntity.ok(userService.findUserByTel(tel));
     }
 
     @DeleteMapping("/{id}/delete")
@@ -31,6 +32,12 @@ public class UserController {
     public ResponseEntity<List<UserInfoDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
 
 
 }

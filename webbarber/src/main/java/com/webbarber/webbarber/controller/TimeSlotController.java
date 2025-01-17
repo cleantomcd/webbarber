@@ -2,10 +2,12 @@ package com.webbarber.webbarber.controller;
 
 import com.webbarber.webbarber.dto.EditedTimeSlotDTO;
 import com.webbarber.webbarber.dto.StandardTimeSlotDTO;
+import com.webbarber.webbarber.exception.*;
 import com.webbarber.webbarber.service.TimeSlotAvailabilityService;
 import com.webbarber.webbarber.service.TimeSlotService;
 import jakarta.transaction.Transactional;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -42,13 +44,14 @@ public class TimeSlotController {
     }
 
     @PutMapping("/edit/{date}/closed-slots/add")
+    @Transactional
     public ResponseEntity<String> addClosedSlots(@PathVariable LocalDate date, @RequestBody List<String> slots) {
-        System.out.println("log");
         timeSlotService.addClosedSlots(date, slots);
         return ResponseEntity.ok("Horários fechados com sucesso.");
     }
 
     @PutMapping("/edit/{date}/closed-slots/remove")
+    @Transactional
     public ResponseEntity<String> removeClosedSlots(@PathVariable LocalDate date, @RequestBody List<String> slots) {
         timeSlotService.removeClosedSlots(date, slots);
         return ResponseEntity.ok("Horários fechados removidos com sucesso.");
@@ -61,27 +64,58 @@ public class TimeSlotController {
         return ResponseEntity.ok("Horários fechados deletados com sucesso.");
     }
 
-    @PutMapping("/edit/{date}/close")
-    public ResponseEntity<String> closeDate(@PathVariable LocalDate date) {
-        timeSlotService.closeDate(date);
-        return ResponseEntity.ok("Data marcada como 'fechada'.");
+    @PutMapping("/edit/{date}/{isOpen}")
+    @Transactional
+    public ResponseEntity<String> setDataAvailability(@PathVariable LocalDate date, @PathVariable boolean isOpen) {
+        timeSlotService.setDataAvailability(date, isOpen);
+        return ResponseEntity.ok("Disponibilidade da data alterada com sucesso");
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<LocalTime>> getAvailableTimeSlots(
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(timeSlotAvailabilityService.getAvailableTimeSlots(date));
+    public ResponseEntity<List<LocalTime>> getAllTimeSlots(@RequestParam("date") @DateTimeFormat
+            (iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(timeSlotAvailabilityService.getAvailableTimeSlotsByService(date, null));
     }
 
-    @GetMapping("/all/{time}")
-    public ResponseEntity<List<LocalDate>> getDatesWithSpecificTime(@PathVariable LocalTime time) {
-        return ResponseEntity.ok(timeSlotAvailabilityService.getDatesWithSpecificTime(time));
-    }
-
-    @GetMapping("/service/{serviceId}")
-    public ResponseEntity<List<LocalTime>> getTimeSlotsByService(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                                                                 @PathVariable String serviceId) {
+    @GetMapping("/all/{serviceId}")
+    public ResponseEntity<List<LocalTime>> getTimeSlotsByService(@RequestParam("date") @DateTimeFormat
+            (iso = DateTimeFormat.ISO.DATE) LocalDate date, @PathVariable String serviceId) {
         return ResponseEntity.ok(timeSlotAvailabilityService.getAvailableTimeSlotsByService(date, serviceId));
+    }
+
+    @ExceptionHandler(TimeSlotNotAvailableException.class)
+    public ResponseEntity<String> handleTimeSlotNotAvailableException(TimeSlotNotAvailableException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDayOfWeekException.class)
+    public ResponseEntity<String> handleInvalidDayOfWeekException(InvalidDayOfWeekException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidTimeIntervalException.class)
+    public ResponseEntity<String> handleInvalidTimeIntervalException(InvalidTimeIntervalException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidStartTimeException.class)
+    public ResponseEntity<String> handleInvalidStartTimeException(InvalidStartTimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ServiceNotFoundException.class)
+    public ResponseEntity<String> handleServiceNotFoundException(ServiceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDateException.class)
+    public ResponseEntity<String> handleInvalidDateException(InvalidDateException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TimeSlotNotFoundException.class)
+    public ResponseEntity<String> handleTimeSlotNotFoundException(TimeSlotNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
 }
