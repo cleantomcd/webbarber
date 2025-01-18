@@ -2,10 +2,7 @@ package com.webbarber.webbarber.controller;
 
 import com.webbarber.webbarber.dto.BookingDTO;
 import com.webbarber.webbarber.dto.BookingInfoDTO;
-import com.webbarber.webbarber.exception.ServiceNotFoundException;
-import com.webbarber.webbarber.exception.TimeSlotNotAvailableException;
-import com.webbarber.webbarber.exception.UserAlreadyExistsException;
-import com.webbarber.webbarber.exception.UserNotFoundException;
+import com.webbarber.webbarber.exception.*;
 import com.webbarber.webbarber.service.BookingService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -60,6 +57,11 @@ public class BookingController {
     @ExceptionHandler(TimeSlotNotAvailableException.class)
     public ResponseEntity<String> handleTimeSlotNotAvailableException(TimeSlotNotAvailableException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BookingNotFoundException.class)
+    public ResponseEntity<String> handleBookingNotFoundException(BookingNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
 }

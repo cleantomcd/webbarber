@@ -3,6 +3,7 @@ package com.webbarber.webbarber.service;
 import com.webbarber.webbarber.dto.EditedTimeSlotDTO;
 import com.webbarber.webbarber.dto.StandardTimeSlotDTO;
 import com.webbarber.webbarber.entity.TimeSlotOverride;
+import com.webbarber.webbarber.exception.InvalidDateException;
 import com.webbarber.webbarber.repository.BookingRepository;
 import com.webbarber.webbarber.repository.TimeSlotOverrideRepository;
 import com.webbarber.webbarber.repository.TimeSlotRepository;
@@ -97,6 +98,8 @@ public class TimeSlotAvailabilityService {
     }
 
     public List<LocalTime> getAvailableTimeSlots(LocalDate date) {
+        validateDate(date);
+
         StandardTimeSlotDTO timeSlot;
         List<LocalTime> allTimeSlots;
         if(timeSlotOverrideRepository.findByDate(date).isPresent()) {
@@ -127,6 +130,7 @@ public class TimeSlotAvailabilityService {
     }
 
     public List<LocalTime> getAvailableTimeSlotsByService(LocalDate date, String serviceId) {
+        validateDate(date);
         List<LocalTime> closedSlots = null;
         List<LocalTime> amTimeSlots;
         List<LocalTime> pmTimeSlots;
@@ -184,5 +188,9 @@ public class TimeSlotAvailabilityService {
         Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.findByDate(date);
         return optionalTimeSlotOverride.map(TimeSlotOverride::getInterval).orElseGet(() ->
                 timeSlotRepository.findByDayOfWeek(date.getDayOfWeek().getValue()).interval());
+    }
+
+    private void validateDate(LocalDate date) {
+        if(date.isBefore(LocalDate.now())) throw new InvalidDateException("Data inválida");
     }
 }
