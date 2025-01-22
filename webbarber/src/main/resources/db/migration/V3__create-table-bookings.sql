@@ -1,6 +1,8 @@
-CREATE TABLE booking (
+CREATE TABLE bookings (
     id TEXT UNIQUE PRIMARY KEY,
-    client_id TEXT NOT NULL,
+    barber_id TEXT NOT NULL,
+    FOREIGN KEY (barber_id) REFERENCES barbers(id),
+    user_id TEXT NOT NULL,
     service_id TEXT NOT NULL,
     "date" DATE NOT NULL,
     start_time TIME NOT NULL,

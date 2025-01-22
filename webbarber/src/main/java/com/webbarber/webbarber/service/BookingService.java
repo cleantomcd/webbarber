@@ -2,6 +2,7 @@ package com.webbarber.webbarber.service;
 
 import com.webbarber.webbarber.dto.BookingDTO;
 import com.webbarber.webbarber.dto.BookingInfoDTO;
+import com.webbarber.webbarber.dto.RequestBookingDTO;
 import com.webbarber.webbarber.entity.Booking;
 import com.webbarber.webbarber.exception.BookingNotFoundException;
 import com.webbarber.webbarber.exception.ServiceNotFoundException;
@@ -30,24 +31,24 @@ public class BookingService {
         this.timeSlotAvailabilityService = timeSlotAvailabilityService;
     }
 
-    public void bookAppointment(BookingDTO data) {
-        validateUser(data.userId());
-        validateService(data.serviceId());
-        validateAvailability(data.date(), data.startTime(), data.serviceId());
-        Booking booking = createBooking(data);
+    public void bookAppointment(String userId, RequestBookingDTO data) {
+        validateUser(userId);
+        validateService(data.barberId(), data.serviceId());
+        validateAvailability(data.barberId(), data.date(), data.startTime(), data.serviceId());
+        Booking booking = createBooking(userId, data.barberId(), data);
         bookingRepository.save(booking);
     }
 
     public List<BookingInfoDTO> getAllSchedules(LocalDate date) {
-        return bookingRepository.findAllByDate(date);
+        return bookingRepository.findAllByBarberIdAndDate(null, date);
     }
 
-    public Booking createBooking(BookingDTO data) {
-        int serviceDuration = serviceService.getDurationById(data.serviceId());
-        int interval = timeSlotAvailabilityService.getInterval(data.date());
+    public Booking createBooking(String userId, String barberId, RequestBookingDTO data) {
+        int serviceDuration = serviceService.getDurationById(null, data.serviceId());
+        int interval = timeSlotAvailabilityService.getInterval(barberId, data.date());
         LocalTime endTime = data.startTime().plusMinutes(interval * serviceDuration);
 
-        return new Booking(data, endTime);
+        return new Booking(userId, data, endTime);
     }
 
     private void validateUser(String userId) {
@@ -56,14 +57,18 @@ public class BookingService {
         }
     }
 
-    private void validateService(String serviceId) {
-        if (!serviceService.existsById(serviceId)) {
+    private void validateBarber(String barberId) {
+
+    }
+
+    private void validateService(String barberId, String serviceId) {
+        if (!serviceService.existsByBarberIdAndId(barberId, serviceId)) {
             throw new ServiceNotFoundException("Serviço não encontrado.");
         }
     }
 
-    private void validateAvailability(LocalDate date, LocalTime startTime, String serviceId) {
-        if (!timeSlotAvailabilityService.isBkAvailable(date, startTime, serviceId)) {
+    private void validateAvailability(String barberId, LocalDate date, LocalTime startTime, String serviceId) {
+        if (!timeSlotAvailabilityService.isBkAvailable(barberId, date, startTime, serviceId)) {
             throw new TimeSlotNotAvailableException("Horário não disponível.");
         }
     }
@@ -75,7 +80,11 @@ public class BookingService {
     }
 
     public List<BookingDTO> getAllSchedulesByUser(String userId) {
-        return bookingRepository.findAllByUserId(userId);
+        return bookingRepository.findAllByBarberIdAndUserId(null, userId);
+    }
+
+    public String getUserIdByPhone(String phone) {
+        return userService.findIdByPhone(phone);
     }
 
 

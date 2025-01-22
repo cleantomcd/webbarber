@@ -17,13 +17,13 @@ public class ServiceService {
       this.serviceRepository = serviceRepository;
   }
 
-  public void createService(ServiceDTO service) {
-      Service newService = new Service(service);
+  public void createService(String barberId, ServiceDTO service) {
+      Service newService = new Service(barberId, service);
       serviceRepository.save(newService);
   }
 
-  public void updateService(String id, ServiceDTO updatedService) {
-      Optional<Service> optionalService = findById(id);
+  public void updateService(String barberId, String id, ServiceDTO updatedService) {
+      Optional<Service> optionalService = findByBarberIdAndId(barberId, id);
       if(optionalService.isEmpty()) throw new ServiceNotFoundException("Serviço não encontrado");
       Service service = optionalService.get();
       updateServiceAttributes(service, updatedService);
@@ -37,33 +37,33 @@ public class ServiceService {
       service.setPriceInCents(updatedService.priceInCents());
   }
 
-  public void deleteService(String id) {
-      Optional<Service> optionalService = findById(id);
+  public void deleteService(String barberId, String id) {
+      Optional<Service> optionalService = findByBarberIdAndId(barberId, id);
       if(optionalService.isEmpty()) throw new ServiceNotFoundException("Serviço não encontrado");
       Service service = optionalService.get();
       serviceRepository.delete(service);
   }
 
-  public Optional<Service> findById(String id) {
-      return serviceRepository.findById(id);
+  public Optional<Service> findByBarberIdAndId(String barberId, String id) {
+      return serviceRepository.findByBarberIdAndId(barberId, id);
   }
 
-  public List<ServiceDTO> getActives() {
-      return new ArrayList<>(serviceRepository.findAllByActiveTrue());
+  public List<ServiceDTO> getActives(String barberId) {
+      return new ArrayList<>(serviceRepository.findAllByBarberIdAndActiveTrue(barberId));
   }
 
-  public void updateServiceStatus(String id) {
-      Optional<Service> optionalService = findById(id);
+  public void updateServiceStatus(String barberId, String id) {
+      Optional<Service> optionalService = findByBarberIdAndId(barberId, id);
       if(optionalService.isEmpty()) throw new ServiceNotFoundException("Serviço não encontrado");
       Service service = optionalService.get();
       service.setActive(!service.isActive());
   }
 
-  public boolean existsById(String id) {
-      return serviceRepository.existsById(id);
+  public boolean existsByBarberIdAndId(String barberId, String id) {
+      return serviceRepository.existsByBarberIdAndId(barberId, id);
   }
 
-  public int getDurationById(String serviceId) {
-      return serviceRepository.getDurationById(serviceId);
+  public int getDurationById(String barberId, String serviceId) {
+      return serviceRepository.getDurationByBarberIdAndId(barberId, serviceId);
   }
 }

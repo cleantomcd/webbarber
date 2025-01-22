@@ -1,6 +1,0 @@
-CREATE TABLE barbers (
-    id TEXT UNIQUE PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    tel VARCHAR(20) NOT NULL,
-    password TEXT NOT NULL
-);

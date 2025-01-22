@@ -2,18 +2,19 @@ package com.webbarber.webbarber.controller;
 
 import com.webbarber.webbarber.dto.BookingDTO;
 import com.webbarber.webbarber.dto.BookingInfoDTO;
+import com.webbarber.webbarber.dto.RequestBookingDTO;
 import com.webbarber.webbarber.exception.*;
 import com.webbarber.webbarber.service.BookingService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController()
-@RequestMapping("/booking")
 public class BookingController {
     private final BookingService bookingService;
 
@@ -22,22 +23,23 @@ public class BookingController {
     }
 
     @PostMapping("/book")
-    public ResponseEntity<String> newBooking(@RequestBody BookingDTO bookingData) {
-        bookingService.bookAppointment(bookingData);
+    public ResponseEntity<String> newBooking(Authentication authentication, @RequestBody RequestBookingDTO bookingData) {
+        String userId = bookingService.getUserIdByPhone(authentication.getName());
+        bookingService.bookAppointment(userId, bookingData);
         return ResponseEntity.ok("Horário reservado com sucesso.");
     }
 
-    @GetMapping("/all")
+    @GetMapping("/schedules/my-schedules/all")
     public ResponseEntity<List<BookingInfoDTO>> getAllSchedules(@RequestParam LocalDate date) {
         return ResponseEntity.ok(bookingService.getAllSchedules(date));
     }
 
-    @GetMapping("/all/{userId}")
+    @GetMapping("/barber/schedules/all/{userId}")
     public ResponseEntity<List<BookingDTO>> getAllSchedulesByUser(@PathVariable String userId) {
         return ResponseEntity.ok(bookingService.getAllSchedulesByUser(userId));
     }
 
-    @DeleteMapping("/{bookingId}/cancel")
+    @DeleteMapping("/barber/schedules/{bookingId}/cancel")
     @Transactional
     public ResponseEntity<String> deleteBooking(@PathVariable String bookingId) {
         bookingService.cancelAppointment(bookingId);

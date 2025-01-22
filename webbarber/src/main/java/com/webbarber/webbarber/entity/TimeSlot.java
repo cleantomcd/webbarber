@@ -1,20 +1,17 @@
 package com.webbarber.webbarber.entity;
 
-
 import com.webbarber.webbarber.dto.StandardTimeSlotDTO;
 import jakarta.persistence.*;
-import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Set;
-
 
 @Table(name = "timeslot")
-@Entity(name = "timeslot")
+@Entity(name = "Timeslot")
 public class TimeSlot {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
+    private String barberId;
     private int dayOfWeek;
     private LocalTime amStartTime;
     private LocalTime amEndTime;
@@ -24,13 +21,18 @@ public class TimeSlot {
 
     public TimeSlot() {}
 
-    public TimeSlot(StandardTimeSlotDTO standardTimeSlotDTO) {
+    public TimeSlot(String barberId, StandardTimeSlotDTO standardTimeSlotDTO) {
+        this.barberId = barberId;
         this.dayOfWeek =  standardTimeSlotDTO.dayOfWeek();
         this.amStartTime = standardTimeSlotDTO.amStartTime();
         this.amEndTime = standardTimeSlotDTO.amEndTime();
         this.pmStartTime = standardTimeSlotDTO.pmStartTime();
         this.pmEndTime = standardTimeSlotDTO.pmEndTime();
         this.interval = standardTimeSlotDTO.interval();
+    }
+
+    public String getBarberId() {
+        return barberId;
     }
 
     public String getId() {

@@ -1,4 +1,4 @@
 package com.webbarber.webbarber.dto;
 
-public record UserInfoDTO(String name, String tel, int amountBookedServices) {
+public record UserInfoDTO(String name, String phone, int amountBookedServices) {
 }

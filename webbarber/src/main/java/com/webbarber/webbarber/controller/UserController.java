@@ -5,11 +5,13 @@ import com.webbarber.webbarber.exception.UserNotFoundException;
 import com.webbarber.webbarber.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/barber/users")
 public class UserController {
     private final UserService userService;
 
@@ -17,9 +19,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{tel}")
-    public ResponseEntity<UserInfoDTO> getUserInfo(@PathVariable String tel) {
-        return ResponseEntity.ok(userService.findUserByTel(tel));
+    @GetMapping("/{phone}") //quando um número não está registrado, não lança exception
+    public ResponseEntity<UserInfoDTO> getUserInfo(@PathVariable String phone) {
+        return ResponseEntity.ok(userService.findUserByTel(phone));
     }
 
     @DeleteMapping("/{id}/delete")
@@ -28,8 +30,8 @@ public class UserController {
         return ResponseEntity.ok("Usuário deletado com sucesso");
     }
 
-    @GetMapping()
-    public ResponseEntity<List<UserInfoDTO>> getAllUsers() {
+    @GetMapping("/all")
+    public ResponseEntity<List<UserInfoDTO>> getAllUsers(Authentication authentication) {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 

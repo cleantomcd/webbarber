@@ -2,8 +2,10 @@ package com.webbarber.webbarber.service;
 
 import com.webbarber.webbarber.dto.RegisterDTO;
 import com.webbarber.webbarber.dto.UserInfoDTO;
+import com.webbarber.webbarber.entity.Barber;
 import com.webbarber.webbarber.entity.User;
 import com.webbarber.webbarber.exception.UserNotFoundException;
+import com.webbarber.webbarber.repository.BarberRepository;
 import com.webbarber.webbarber.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,36 +21,38 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BarberRepository barberRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BarberRepository barberRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.barberRepository = barberRepository;
     }
 
     public void registerUser(@Valid RegisterDTO data) {
         String encryptedPassword = passwordEncoder.encode(data.password());
-        String formatedPhoneNumber = formatPhoneNumber(data.tel());
+        String formatedPhoneNumber = formatPhoneNumber(data.phone());
         User newUser = new User(data.name(), formatedPhoneNumber, encryptedPassword);
         userRepository.save(newUser);
     }
 
-    private String formatPhoneNumber(String tel) {
-        if(tel.startsWith("+55")) return tel;
-        else return "+55" + tel;
+    private String formatPhoneNumber(String phone) {
+        if(phone.startsWith("+55")) return phone;
+        else return "+55" + phone;
     }
 
-    public boolean userExists(String tel) {
-        tel = formatPhoneNumber(tel);
-        return userRepository.findByTel(tel).isPresent();
+    public boolean userExists(String phone) {
+        phone = formatPhoneNumber(phone);
+        return userRepository.findByPhone(phone).isPresent();
     }
 
     public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
 
-    public UserInfoDTO findUserByTel(String tel) {
-        tel = formatPhoneNumber(tel);
-        return userRepository.findUserByTel(tel);
+    public UserInfoDTO findUserByTel(String phone) {
+        phone = formatPhoneNumber(phone);
+        return userRepository.findUserByPhone(phone);
     }
 
     public void deleteUser(String id) {
@@ -66,5 +70,7 @@ public class UserService {
         return userRepository.existsById(id);
     }
 
-
+    public String findIdByPhone(String phone) {
+        return userRepository.findIdByPhone(phone);
+    }
 }

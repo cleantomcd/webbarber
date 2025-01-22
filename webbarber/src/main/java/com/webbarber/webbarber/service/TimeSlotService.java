@@ -28,17 +28,17 @@ public class TimeSlotService {
         this.timeSlotOverrideRepository = timeSlotOverrideRepository;
     }
 
-    public void setTimeSlot(StandardTimeSlotDTO standardTimeSlotDTO) {
+    public void setTimeSlot(String barberId, StandardTimeSlotDTO standardTimeSlotDTO) {
         validateTimeSlot(standardTimeSlotDTO);
 
         Optional<TimeSlot> optionalTimeSlot = timeSlotRepository.
-                optionalFindByDayOfWeek(standardTimeSlotDTO.dayOfWeek());
+                optionalFindByBarberIdAndDayOfWeek(barberId, standardTimeSlotDTO.dayOfWeek());
         TimeSlot newTimeSlot;
         if(optionalTimeSlot.isPresent()) {
             newTimeSlot = optionalTimeSlot.get();
             updateTimeSlotFromDTO(newTimeSlot, standardTimeSlotDTO);
         }
-        else newTimeSlot = new TimeSlot(standardTimeSlotDTO);
+        else newTimeSlot = new TimeSlot(barberId, standardTimeSlotDTO);
 
         timeSlotRepository.save(newTimeSlot);
     }
@@ -93,59 +93,69 @@ public class TimeSlotService {
         timeSlotOverride.setClosedSlots(dto.closedSlots());
     }
 
-    public void removeTimeSlotOverride(LocalDate date) {
-        TimeSlotOverride timeSlotOverride = timeSlotOverrideRepository.findDTOByDate(date);
+    public void removeTimeSlotOverride(String barberId, LocalDate date) {
+        TimeSlotOverride timeSlotOverride = timeSlotOverrideRepository.findDTOByBarberIdAndDate(barberId, date);
         timeSlotOverrideRepository.delete(timeSlotOverride);
     }
 
-    public void editTimeSlot(EditedTimeSlotDTO editedTimeSlotDTO) {
+    public void editTimeSlot(String barberId, EditedTimeSlotDTO editedTimeSlotDTO) {
         validateEditedTimeSlot(editedTimeSlotDTO);
 
         TimeSlotOverride timeSlotOverride;
         Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.
-                findByDate(editedTimeSlotDTO.date());
+                findByBarberIdAndDate(barberId, editedTimeSlotDTO.date());
         if(optionalTimeSlotOverride.isPresent()) {
             timeSlotOverride = optionalTimeSlotOverride.get();
             updateTimeSlotOverrideFromDTO(timeSlotOverride, editedTimeSlotDTO);
         }
-        else timeSlotOverride = new TimeSlotOverride(editedTimeSlotDTO);
+        else timeSlotOverride = new TimeSlotOverride(barberId, editedTimeSlotDTO);
         timeSlotOverrideRepository.save(timeSlotOverride);
     }
 
-    public void setDataAvailability(LocalDate date, boolean isOpen) {
+    public void setDataAvailability(String barberId, LocalDate date, boolean isOpen) {
         validateDate(date);
 
         TimeSlotOverride timeSlotOverride;
-        Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.findByDate(date);
+        Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.
+                findByBarberIdAndDate(barberId, date);
+
         if(optionalTimeSlotOverride.isPresent()) {
             timeSlotOverride = optionalTimeSlotOverride.get();
             timeSlotOverride.setClosed(!isOpen);
             return;
         }
-        timeSlotOverride = new TimeSlotOverride(date, timeSlotRepository.findByDayOfWeek(date.getDayOfWeek().getValue()), isOpen);
+
+        timeSlotOverride = new TimeSlotOverride(date, timeSlotRepository.
+                findByBarberIdAndDayOfWeek(barberId, date.getDayOfWeek().getValue()), isOpen);
         timeSlotOverrideRepository.save(timeSlotOverride);
     }
 
-    public void addClosedSlots(LocalDate date, List<String> slots) {
+    public void addClosedSlots(String barberId, LocalDate date, List<String> slots) {
         validateDate(date);
 
-        Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.findByDate(date);
+        Optional<TimeSlotOverride> optionalTimeSlotOverride =
+                timeSlotOverrideRepository.findByBarberIdAndDate(barberId, date);
+
         if(optionalTimeSlotOverride.isEmpty()) throw new TimeSlotNotFoundException("Data inválida");
         optionalTimeSlotOverride.get().addClosedSlots(slots);
     }
 
-    public void removeClosedSlots(LocalDate date, List<String> slots) {
+    public void removeClosedSlots(String barberId, LocalDate date, List<String> slots) {
         validateDate(date);
 
-        Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.findByDate(date);
+        Optional<TimeSlotOverride> optionalTimeSlotOverride =
+                timeSlotOverrideRepository.findByBarberIdAndDate(barberId, date);
+
         if(optionalTimeSlotOverride.isEmpty()) throw new TimeSlotNotFoundException("Data inválida");
         optionalTimeSlotOverride.get().removeClosedSlots(slots);
     }
 
-    public void clearClosedSlots(LocalDate date) {
+    public void clearClosedSlots(String barberId, LocalDate date) {
         validateDate(date);
 
-        Optional<TimeSlotOverride> optionalTimeSlotOverride = timeSlotOverrideRepository.findByDate(date);
+        Optional<TimeSlotOverride> optionalTimeSlotOverride =
+                timeSlotOverrideRepository.findByBarberIdAndDate(barberId, date);
+
         if(optionalTimeSlotOverride.isEmpty()) throw new TimeSlotNotFoundException("Data inválida");
         optionalTimeSlotOverride.get().clearClosedSlots();
     }

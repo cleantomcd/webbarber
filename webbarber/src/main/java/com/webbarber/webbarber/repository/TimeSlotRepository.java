@@ -15,10 +15,12 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, String> {
 
     @Query("SELECT new com.webbarber.webbarber.dto.StandardTimeSlotDTO(" +
             "t.dayOfWeek, t.amStartTime, t.amEndTime, t.pmStartTime, t.pmEndTime, t.interval) " +
-            "FROM timeslot t WHERE t.dayOfWeek = :day")
-    StandardTimeSlotDTO findByDayOfWeek(@Param("day") int dayOfWeek);
+            "FROM Timeslot t WHERE t.barberId = :barberId AND t.dayOfWeek = :day")
+    StandardTimeSlotDTO findByBarberIdAndDayOfWeek(@Param("barberId") String barberId,
+                                                   @Param("day") int dayOfWeek);
 
-    @Query(value = "SELECT t FROM timeslot t WHERE t.dayOfWeek = :dayOfWeek")
-    Optional<TimeSlot> optionalFindByDayOfWeek(int dayOfWeek);
+    @Query("SELECT t FROM Timeslot t WHERE t.barberId = :barberId AND t.dayOfWeek = :dayOfWeek")
+    Optional<TimeSlot> optionalFindByBarberIdAndDayOfWeek(@Param("barberId") String barberId,
+                                                          @Param("dayOfWeek") int dayOfWeek);
 
 }

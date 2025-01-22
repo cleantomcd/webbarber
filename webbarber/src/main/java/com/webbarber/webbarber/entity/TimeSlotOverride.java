@@ -10,12 +10,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Table(name = "timeslot_override")
-@Entity(name = "timeslot_override")
+@Entity(name = "TimeslotOverride")
 public class TimeSlotOverride {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    private String barberId;
     private LocalDate date;
     private LocalTime amStartTime;
     private LocalTime amEndTime;
@@ -32,7 +33,8 @@ public class TimeSlotOverride {
 
     }
 
-    public TimeSlotOverride(EditedTimeSlotDTO editedTimeSlotDTO) {
+    public TimeSlotOverride(String barberId, EditedTimeSlotDTO editedTimeSlotDTO) {
+        this.barberId = barberId;
         this.date = editedTimeSlotDTO.date();
         this.amStartTime = editedTimeSlotDTO.amStartTime();
         this.amEndTime = editedTimeSlotDTO.amEndTime();
@@ -56,6 +58,10 @@ public class TimeSlotOverride {
 
     public String getId() {
         return id;
+    }
+
+    public String getBarberId() {
+        return barberId;
     }
 
     public LocalDate getDate() {

@@ -12,21 +12,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "user")
+@Entity(name = "User")
 @Table(name = "users")
 public class User implements UserDetails, Comparable {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String name;
-    private String tel;
+    private String phone;
     private String password;
     private UserRole role;
     private int amountBookedServices;
 
-    public User(String name, String tel, String password) {
+    public User(String name, String phone, String password) {
         this.name = name;
-        this.tel = tel;
+        this.phone = phone;
         this.password = password;
         this.role = UserRole.USER;
         this.amountBookedServices = 0;
@@ -34,7 +34,7 @@ public class User implements UserDetails, Comparable {
 
     public User(@Valid RegisterDTO data) {
         this.name = data.name();
-        this.tel = data.tel();
+        this.phone = data.phone();
         this.password = data.password();
         this.role = UserRole.USER;
         this.amountBookedServices = 0;
@@ -51,17 +51,17 @@ public class User implements UserDetails, Comparable {
         this.name = name;
     }
 
-    public String getTel() {
-        return tel;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setTel(String tel) {
-        this.tel = tel;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getLogin() { return this.tel; }
+    public String getLogin() { return this.phone; }
 
-    public UserRole getUserRole() { return this.role; }
+    public UserRole getRole() { return this.role; }
 
     public int getAmountBookedServices() { return this.amountBookedServices; }
 
@@ -69,8 +69,14 @@ public class User implements UserDetails, Comparable {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if (this.role == UserRole.ADMIN) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_USER")
+            );
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
     }
 
     public String getPassword() {
@@ -79,7 +85,7 @@ public class User implements UserDetails, Comparable {
 
     @Override
     public String getUsername() {
-        return this.tel;
+        return this.phone;
     }
 
     @Override
