@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenService {
+
     @Value("${api.security.token.secret}")
     private String secret;
 
@@ -27,10 +28,9 @@ public class TokenService {
                     .withExpiresAt(generationExpirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Error while generating token.", exception);
+            throw new RuntimeException("Erro ao gerar o token.", exception);
         }
     }
-
 
     public String extractRole(String token) {
         try {
@@ -40,13 +40,10 @@ public class TokenService {
                     .build()
                     .verify(token)
                     .getClaim("role").asString();
-
         } catch (JWTVerificationException exception) {
-            throw new RuntimeException("Invalid token.", exception);
+            throw new RuntimeException("Token inválido.", exception);
         }
-
     }
-
 
     private Instant generationExpirationDate() {
         return LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.of("-03:00"));
@@ -60,10 +57,8 @@ public class TokenService {
                     .build()
                     .verify(token)
                     .getSubject();
-        }
-        catch (JWTVerificationException exception) {
+        } catch (JWTVerificationException exception) {
             return "";
         }
     }
-
 }

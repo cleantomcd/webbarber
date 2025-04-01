@@ -1,6 +1,5 @@
 package com.webbarber.webbarber.entity;
 
-import ch.qos.logback.core.net.server.Client;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,13 +8,13 @@ public class Notification {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Client client;
+    private User user;
     private String message;
     private String type;
     private String status;
 
-    public Notification(Client client, String message, String type, String status) {
-        this.client = client;
+    public Notification(User user, String message, String type, String status) {
+        this.user = user;
         this.message = message;
         this.type = type;
         this.status = status;
@@ -27,8 +26,8 @@ public class Notification {
         return id;
     }
 
-    public Client getClient() {
-        return client;
+    public User getUser() {
+        return user;
     }
 
     public String getMessage() {
