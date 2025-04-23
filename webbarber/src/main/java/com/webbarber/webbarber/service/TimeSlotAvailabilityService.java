@@ -294,7 +294,7 @@ public class TimeSlotAvailabilityService {
      * @param date     Data para verificar o intervalo
      * @return Intervalo em minutos entre os horários de trabalho
      */
-    private int getInterval(String barberId, LocalDate date) {
+    public int getInterval(String barberId, LocalDate date) {
         StandardTimeSlotDTO timeSlotDTO = timeSlotRepository.findByBarberIdAndDayOfWeek(barberId, date.getDayOfWeek().getValue());
         return timeSlotDTO.interval();
     }
@@ -306,6 +306,6 @@ public class TimeSlotAvailabilityService {
      * @throws InvalidDateException Se a data não for válida
      */
     private void validateDate(LocalDate date) {
-        if(date.isBefore(LocalDate.now())) throw new InvalidDateException();
+        if(date.isBefore(LocalDate.now())) throw new InvalidDateException("invalid date");
     }
 }

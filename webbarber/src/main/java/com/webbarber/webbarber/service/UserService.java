@@ -22,19 +22,16 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final BarberRepository barberRepository;
 
     /**
      * Construtor da classe UserService.
      *
      * @param userRepository o repositório utilizado para a persistência dos dados de usuário
      * @param passwordEncoder o codificador de senha utilizado para criptografar as senhas dos usuários
-     * @param barberRepository o repositório utilizado para a persistência dos dados dos barbeiros (atualmente não utilizado)
      */
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BarberRepository barberRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.barberRepository = barberRepository;
     }
 
     /**
